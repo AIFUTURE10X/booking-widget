@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight, Zap, Globe, Bell, LayoutDashboard, Clock,
   Check, X, ChevronRight, Code2, MousePointerClick, Settings2,
-  Wrench, Calendar, Star,
+  Wrench, Calendar, Star, Plus, Minus,
 } from "lucide-react";
 import { BookingWidget } from "@/components/widget/BookingWidget";
 import { industryConfigs } from "@/lib/configs";
@@ -44,18 +46,18 @@ const INDUSTRIES_COMING = [
 ];
 
 const STEPS = [
-  { icon: Settings2, title: "Pick your industry", desc: "Choose from our pre-built service menus tailored to your trade." },
-  { icon: MousePointerClick, title: "Customize services", desc: "Check off the services you offer. Remove what you don't." },
-  { icon: Code2, title: "Drop the script", desc: "One line of code. Works on any website. Live in 5 minutes." },
+  { icon: Settings2, title: "Pick your industry", desc: "Choose from our pre-built service menus tailored to your trade.", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.15)" },
+  { icon: MousePointerClick, title: "Customize services", desc: "Check off the services you offer. Remove what you don't.", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.15)" },
+  { icon: Code2, title: "Drop the script", desc: "One line of code. Works on any website. Live in 5 minutes.", color: "#10b981", bg: "rgba(16, 185, 129, 0.15)" },
 ];
 
 const FEATURES = [
-  { icon: Zap, title: "No full platform needed", desc: "Just a booking widget. Not a $200/mo business management system you'll never use." },
-  { icon: Globe, title: "Works everywhere", desc: "WordPress, Squarespace, Wix, Shopify, plain HTML. One script tag." },
-  { icon: Wrench, title: "Industry-specific menus", desc: "Not a generic calendar. Real service options like 'Blocked Drain' and 'Leaking Tap'." },
-  { icon: Bell, title: "Instant notifications", desc: "Email and SMS alerts the moment a customer books. Never miss a lead." },
-  { icon: LayoutDashboard, title: "Dashboard inbox", desc: "See all bookings in one place. Confirm, complete, or cancel with one click." },
-  { icon: Clock, title: "5-minute setup", desc: "Pick industry, enter business details, paste one script tag. Done." },
+  { icon: Zap, title: "No full platform needed", desc: "Just a booking widget. Not a $200/mo business management system you'll never use.", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.15)" },
+  { icon: Globe, title: "Works everywhere", desc: "WordPress, Squarespace, Wix, Shopify, plain HTML. One script tag.", color: "#3b82f6", bg: "rgba(59, 130, 246, 0.15)" },
+  { icon: Wrench, title: "Industry-specific menus", desc: "Not a generic calendar. Real service options like 'Blocked Drain' and 'Leaking Tap'.", color: "#10b981", bg: "rgba(16, 185, 129, 0.15)" },
+  { icon: Bell, title: "Instant notifications", desc: "Email and SMS alerts the moment a customer books. Never miss a lead.", color: "#f43f5e", bg: "rgba(244, 63, 94, 0.15)" },
+  { icon: LayoutDashboard, title: "Dashboard inbox", desc: "See all bookings in one place. Confirm, complete, or cancel with one click.", color: "#8b5cf6", bg: "rgba(139, 92, 246, 0.15)" },
+  { icon: Clock, title: "5-minute setup", desc: "Pick industry, enter business details, paste one script tag. Done.", color: "#06b6d4", bg: "rgba(6, 182, 212, 0.15)" },
 ];
 
 const PRICING = [
@@ -89,6 +91,40 @@ const COMPARISON = [
   { name: "Jobber", price: "$25+/mo", widget: false, standalone: false, industrySpecific: false, fiveMin: false },
 ];
 
+const FAQS = [
+  { q: "Do I need a developer to set this up?", a: "No. You pick your industry, enter your business details, and get a single line of code to paste on your website. If you can copy and paste, you can set up BookButton. Most customers are live in under 5 minutes." },
+  { q: "What websites does it work on?", a: "Any website. WordPress, Squarespace, Wix, Shopify, Webflow, plain HTML — if it has a website, BookButton works on it. It's just one script tag." },
+  { q: "How do I get notified when someone books?", a: "You get an instant email notification with all the booking details — customer name, phone, service needed, preferred time. On the Pro plan and above, you also get SMS notifications." },
+  { q: "Is this a full business management platform?", a: "No — and that's the point. BookButton is just a booking widget. You don't need to learn a whole new platform, migrate your data, or pay $200+/month for features you'll never use. Just bookings." },
+  { q: "Can I customize which services appear in the widget?", a: "Yes. During setup, you choose from our pre-built service menu for your industry and uncheck anything you don't offer. You can also add custom services." },
+  { q: "What happens when a customer submits a booking?", a: "You get notified immediately via email (and SMS on Pro+). The booking appears in your dashboard inbox where you can confirm, reschedule, or cancel it. Then you call the customer to confirm." },
+  { q: "Can I use BookButton for multiple locations?", a: "Yes. The Starter plan includes 1 widget, Pro includes 3, and Business gives you unlimited widgets — each with its own business name, phone number, and branding." },
+  { q: "Is there a contract or setup fee?", a: "No contracts, no setup fees. Pay monthly, cancel anytime. You can also start with a free trial to test it out before committing." },
+];
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-gray-200">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between py-5 text-left group"
+      >
+        <span className="font-semibold text-[#0f172a] pr-4 group-hover:text-[#0891b2] transition-colors">{q}</span>
+        {open
+          ? <Minus className="h-5 w-5 text-[#0891b2] flex-shrink-0" />
+          : <Plus className="h-5 w-5 text-gray-400 flex-shrink-0 group-hover:text-[#0891b2] transition-colors" />
+        }
+      </button>
+      {open && (
+        <div className="pb-5 pr-8">
+          <p className="text-gray-600 leading-relaxed">{a}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ─── Page ───────────────────────────────────────────────────── */
 export default function LandingPage() {
   const plumbingConfig = industryConfigs["plumbing"];
@@ -99,20 +135,21 @@ export default function LandingPage() {
       {/* ═══ NAV ═══ */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#0f172a]/80 border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#22d3ee] to-[#0891b2] flex items-center justify-center">
-              <Calendar className="h-4 w-4 text-white" />
-            </div>
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="BookButton" width={72} height={72} />
             <span className="text-white font-bold text-lg tracking-tight" style={{ fontFamily: "var(--font-dm-sans)" }}>
               Book<span className="text-[#22d3ee]">Button</span>
             </span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#how-it-works" className="text-sm text-gray-400 hover:text-white transition-colors">How it works</a>
-            <a href="#industries" className="text-sm text-gray-400 hover:text-white transition-colors">Industries</a>
-            <a href="#pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</a>
+            <a href="#how-it-works" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">How it works</a>
+            <a href="#industries" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">Industries</a>
+            <a href="#pricing" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">Pricing</a>
+            <a href="#faq" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">FAQ</a>
+            <Link href="/preview" target="_blank" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">Live Demo</Link>
             <Link
               href="/dashboard/onboarding"
+              target="_blank"
               className="px-4 py-2 rounded-lg bg-[#0891b2] text-white text-sm font-semibold hover:bg-[#0e7490] transition-colors"
             >
               Get Started
@@ -132,7 +169,7 @@ export default function LandingPage() {
           <div>
             <div className="animate-fade-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#22d3ee]/20 bg-[#22d3ee]/5 mb-8">
               <div className="w-1.5 h-1.5 rounded-full bg-[#22d3ee] animate-pulse" />
-              <span className="text-xs font-medium text-[#22d3ee] tracking-wide uppercase">20+ industries supported</span>
+              <span className="text-xs font-medium text-[#22d3ee] tracking-wide uppercase">Works for any industry</span>
             </div>
 
             <h1 className="animate-fade-up-d1 text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight">
@@ -147,6 +184,7 @@ export default function LandingPage() {
             <div className="animate-fade-up-d3 mt-10 flex flex-wrap gap-4">
               <Link
                 href="/preview"
+                target="_blank"
                 className="group flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-[#0891b2] to-[#06b6d4] text-white font-semibold text-sm shadow-lg shadow-[#0891b2]/25 hover:shadow-xl hover:shadow-[#0891b2]/30 transition-all hover:scale-[1.02]"
               >
                 Try Live Demo
@@ -154,6 +192,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/dashboard/onboarding"
+                target="_blank"
                 className="flex items-center gap-2 px-7 py-3.5 rounded-xl border border-white/10 text-white font-semibold text-sm hover:bg-white/5 transition-all"
               >
                 Get Started Free
@@ -183,15 +222,45 @@ export default function LandingPage() {
                     <span className="text-[10px] text-gray-500 font-mono">smithsplumbing.com.au</span>
                   </div>
                 </div>
-                {/* Fake website content */}
-                <div className="p-6 space-y-4">
-                  <div className="h-3 bg-white/5 rounded w-3/4" />
-                  <div className="h-3 bg-white/5 rounded w-1/2" />
-                  <div className="h-20 bg-white/5 rounded mt-4" />
-                  <div className="grid grid-cols-3 gap-3 mt-4">
-                    <div className="h-16 bg-white/5 rounded" />
-                    <div className="h-16 bg-white/5 rounded" />
-                    <div className="h-16 bg-white/5 rounded" />
+                {/* Realistic fake plumber website */}
+                <div className="bg-[#1a2332]">
+                  {/* Nav */}
+                  <div className="flex items-center justify-between px-5 py-2.5 border-b border-white/5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded bg-[#0891b2]/60" />
+                      <span className="text-[10px] font-bold text-white/80">Smith&apos;s Plumbing</span>
+                    </div>
+                    <div className="flex gap-3">
+                      <span className="text-[8px] text-white/40">Services</span>
+                      <span className="text-[8px] text-white/40">About</span>
+                      <span className="text-[8px] text-white/40">Contact</span>
+                    </div>
+                  </div>
+                  {/* Hero banner */}
+                  <div className="px-5 py-6 bg-gradient-to-r from-[#0c4a6e]/60 to-[#164e63]/60">
+                    <p className="text-[13px] font-bold text-white leading-tight">24/7 Emergency<br/>Plumbing Service</p>
+                    <p className="text-[8px] text-white/50 mt-1.5">Licensed plumbers across Sydney</p>
+                    <div className="mt-3 w-16 h-5 rounded bg-[#0891b2]/70 flex items-center justify-center">
+                      <span className="text-[7px] text-white font-semibold">Call Now</span>
+                    </div>
+                  </div>
+                  {/* Service cards */}
+                  <div className="px-5 py-4">
+                    <p className="text-[9px] font-bold text-white/60 mb-2">Our Services</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-white/5 rounded-lg p-2.5 text-center">
+                        <span className="text-sm">🚰</span>
+                        <p className="text-[7px] text-white/50 mt-1">Blocked Drains</p>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-2.5 text-center">
+                        <span className="text-sm">🔥</span>
+                        <p className="text-[7px] text-white/50 mt-1">Hot Water</p>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-2.5 text-center">
+                        <span className="text-sm">🔧</span>
+                        <p className="text-[7px] text-white/50 mt-1">Gas Fitting</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -245,10 +314,10 @@ export default function LandingPage() {
                   )}
                   <div className="card-hover bg-gray-50 rounded-2xl p-8 border border-gray-100">
                     <div className="flex items-center gap-4 mb-5">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0891b2] to-[#22d3ee] flex items-center justify-center shadow-lg shadow-[#0891b2]/15">
-                        <s.icon className="h-5 w-5 text-white" />
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" style={{ background: s.bg, boxShadow: `0 4px 12px ${s.color}20` }}>
+                        <s.icon className="h-5 w-5" style={{ color: s.color }} />
                       </div>
-                      <span className="text-6xl font-extrabold text-gray-100 group-hover:text-[#0891b2]/10 transition-colors">
+                      <span className="text-6xl font-extrabold transition-colors" style={{ color: `${s.color}25`, WebkitTextStroke: `1.5px ${s.color}40` }}>
                         {i + 1}
                       </span>
                     </div>
@@ -309,7 +378,8 @@ export default function LandingPage() {
         </div>
 
         {/* Actual widget */}
-        {plumbingConfig && (
+        {/* Widget demo removed from landing page — visitors use /preview instead */}
+        {false && plumbingConfig && (
           <BookingWidget
             industry={plumbingConfig}
             widget={{
@@ -318,6 +388,7 @@ export default function LandingPage() {
               phone: "0412 345 678",
               accentColor: "#0891b2",
             }}
+            buttonText="Book Online Demo"
           />
         )}
       </section>
@@ -399,9 +470,12 @@ export default function LandingPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f) => (
               <Reveal key={f.title}>
-                <div className="card-hover bg-white/5 backdrop-blur rounded-2xl border border-white/5 p-6 hover:border-[#22d3ee]/20 transition-colors">
-                  <div className="w-10 h-10 rounded-lg bg-[#22d3ee]/10 flex items-center justify-center mb-4">
-                    <f.icon className="h-5 w-5 text-[#22d3ee]" />
+                <div
+                  className="border-chase card-hover bg-white/5 backdrop-blur rounded-2xl border border-white/5 p-6 transition-colors"
+                  style={{ "--chase-color": f.color } as React.CSSProperties}
+                >
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style={{ background: f.bg }}>
+                    <f.icon className="h-5 w-5" style={{ color: f.color }} />
                   </div>
                   <h3 className="font-bold text-white mb-2">{f.title}</h3>
                   <p className="text-sm text-gray-400 leading-relaxed">{f.desc}</p>
@@ -458,6 +532,7 @@ export default function LandingPage() {
                   </ul>
                   <Link
                     href="/dashboard/onboarding"
+                    target="_blank"
                     className={`w-full py-3 rounded-xl text-center text-sm font-semibold transition-all ${
                       plan.highlighted
                         ? "bg-gradient-to-r from-[#0891b2] to-[#06b6d4] text-white shadow-lg shadow-[#0891b2]/20 hover:shadow-xl hover:scale-[1.02]"
@@ -527,6 +602,28 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ═══ FAQ ═══ */}
+      <section id="faq" className="py-24 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6">
+          <Reveal>
+            <div className="text-center mb-12">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#0891b2]">FAQ</span>
+              <h2 className="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-[#0f172a]">
+                Frequently asked questions
+              </h2>
+            </div>
+          </Reveal>
+
+          <Reveal>
+            <div className="bg-white rounded-2xl border border-gray-200 px-8">
+              {FAQS.map((faq) => (
+                <FaqItem key={faq.q} q={faq.q} a={faq.a} />
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ═══ CTA FOOTER ═══ */}
       <section className="py-24 bg-[#0f172a] relative noise-overlay overflow-hidden">
         <div className="absolute inset-0 hero-grid opacity-30" />
@@ -543,6 +640,7 @@ export default function LandingPage() {
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
                 href="/dashboard/onboarding"
+                target="_blank"
                 className="group flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#0891b2] to-[#06b6d4] text-white font-bold shadow-lg shadow-[#0891b2]/25 hover:shadow-xl hover:shadow-[#0891b2]/35 transition-all hover:scale-[1.02]"
               >
                 Get Started Free
@@ -550,6 +648,7 @@ export default function LandingPage() {
               </Link>
               <Link
                 href="/preview"
+                target="_blank"
                 className="flex items-center gap-2 px-8 py-4 rounded-xl border border-white/10 text-white font-bold hover:bg-white/5 transition-all"
               >
                 Try the Demo
@@ -566,19 +665,18 @@ export default function LandingPage() {
       <footer className="bg-[#0a0f1a] border-t border-white/5 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#22d3ee] to-[#0891b2] flex items-center justify-center">
-                <Calendar className="h-3.5 w-3.5 text-white" />
-              </div>
+            <div className="flex items-center gap-2">
+              <Image src="/logo.png" alt="BookButton" width={60} height={60} />
               <span className="text-white font-bold tracking-tight">
                 Book<span className="text-[#22d3ee]">Button</span>
               </span>
             </div>
             <div className="flex items-center gap-8 text-sm text-gray-500">
-              <a href="#how-it-works" className="hover:text-gray-300 transition-colors">How it works</a>
-              <a href="#industries" className="hover:text-gray-300 transition-colors">Industries</a>
-              <a href="#pricing" className="hover:text-gray-300 transition-colors">Pricing</a>
-              <Link href="/preview" className="hover:text-gray-300 transition-colors">Demo</Link>
+              <a href="#how-it-works" className="hover:text-[#22d3ee] transition-colors">How it works</a>
+              <a href="#industries" className="hover:text-[#22d3ee] transition-colors">Industries</a>
+              <a href="#pricing" className="hover:text-[#22d3ee] transition-colors">Pricing</a>
+              <a href="#faq" className="hover:text-[#22d3ee] transition-colors">FAQ</a>
+              <Link href="/preview" target="_blank" className="hover:text-[#22d3ee] transition-colors">Demo</Link>
             </div>
             <p className="text-sm text-gray-600">
               &copy; 2026 BookButton. All rights reserved.

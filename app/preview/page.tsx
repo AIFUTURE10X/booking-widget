@@ -59,19 +59,47 @@ export default function PreviewPage() {
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Accent Color</label>
-              <div className="flex gap-2 mt-1">
+              <label className="text-sm font-medium text-gray-700">Brand Color</label>
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {[
+                  { color: "#0891b2", name: "Teal" },
+                  { color: "#2563eb", name: "Blue" },
+                  { color: "#16a34a", name: "Green" },
+                  { color: "#dc2626", name: "Red" },
+                  { color: "#ea580c", name: "Orange" },
+                  { color: "#7c3aed", name: "Purple" },
+                  { color: "#db2777", name: "Pink" },
+                  { color: "#ca8a04", name: "Gold" },
+                  { color: "#0f172a", name: "Navy" },
+                  { color: "#374151", name: "Slate" },
+                ].map((c) => (
+                  <button
+                    key={c.color}
+                    onClick={() => setAccentColor(c.color)}
+                    className="group relative w-9 h-9 rounded-lg border-2 transition-all hover:scale-110"
+                    style={{
+                      background: c.color,
+                      borderColor: accentColor === c.color ? "white" : "transparent",
+                      boxShadow: accentColor === c.color ? `0 0 0 2px ${c.color}` : "none",
+                    }}
+                    title={c.name}
+                  >
+                    {accentColor === c.color && (
+                      <span className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">✓</span>
+                    )}
+                  </button>
+                ))}
                 <input
                   type="color"
                   value={accentColor}
                   onChange={(e) => setAccentColor(e.target.value)}
-                  className="h-10 w-12 rounded-lg border border-gray-300 cursor-pointer"
+                  className="w-9 h-9 rounded-lg border border-gray-300 cursor-pointer"
+                  title="Custom color"
                 />
-                <input
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
-                  className="flex-1 h-10 rounded-lg border border-gray-300 px-3 text-sm font-mono"
-                />
+              </div>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-5 h-5 rounded" style={{ background: accentColor }} />
+                <span className="text-xs text-gray-400 font-mono">{accentColor}</span>
               </div>
             </div>
           </div>

@@ -159,6 +159,56 @@ body {
   box-shadow: 0 0 0 1px rgba(8, 145, 178, 0.3), 0 8px 40px -8px rgba(8, 145, 178, 0.2);
 }
 
+/* Border chase animation */
+@keyframes border-chase {
+  0% { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%; }
+  25% { background-position: 100% 0%, 100% 100%, 0% 100%, 0% 0%; }
+  50% { background-position: 100% 100%, 0% 100%, 0% 0%, 100% 0%; }
+  75% { background-position: 0% 100%, 0% 0%, 100% 0%, 100% 100%; }
+  100% { background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%; }
+}
+
+.border-chase {
+  position: relative;
+  overflow: hidden;
+  border: none !important;
+}
+
+.border-chase::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(var(--chase-angle, 0deg), transparent 40%, var(--chase-color, #22d3ee) 50%, transparent 60%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes spin-border {
+  to { --chase-angle: 360deg; }
+}
+
+/* Use conic gradient for the spinning effect */
+.border-chase:hover::before {
+  opacity: 1;
+  background: conic-gradient(from var(--border-angle, 0deg), transparent 60%, var(--chase-color, #22d3ee) 80%, transparent 100%);
+  animation: rotate-border 2s linear infinite;
+}
+
+@keyframes rotate-border {
+  to { --border-angle: 360deg; }
+}
+
+/* Fallback for browsers without @property */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 /* Code block styling */
 .code-block {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);

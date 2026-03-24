@@ -20,9 +20,10 @@ const INITIAL_DATA: BookingData = {
 interface Props {
   industry: IndustryConfig;
   widget: WidgetConfig;
+  buttonText?: string;
 }
 
-export function BookingWidget({ industry, widget }: Props) {
+export function BookingWidget({ industry, widget, buttonText }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [data, setData] = useState<BookingData>({ ...INITIAL_DATA, state: industry.states[0] || "" });
@@ -96,10 +97,10 @@ export function BookingWidget({ industry, widget }: Props) {
       {/* Floating button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 left-6 z-50 flex items-center gap-2 pl-5 pr-3 py-2 rounded-full shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 pl-5 pr-3 py-2 rounded-full shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
         style={{ background: accent }}
       >
-        <span className="text-sm font-semibold text-white whitespace-nowrap">Book Online</span>
+        <span className="text-sm font-semibold text-white whitespace-nowrap">{buttonText || "Book Online"}</span>
         <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
           <Calendar className="h-4 w-4 text-white" />
         </div>
