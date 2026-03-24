@@ -67,6 +67,7 @@ const PRICING = [
     desc: "Perfect for solo operators",
     features: ["1 booking widget", "Email notifications", "Dashboard inbox", "All industries", "Embed on any site", "Standard support"],
     highlighted: false,
+    color: "#3b82f6",
   },
   {
     name: "Pro",
@@ -74,6 +75,7 @@ const PRICING = [
     desc: "For growing businesses",
     features: ["3 booking widgets", "SMS + email notifications", "Dashboard inbox", "All industries", "Embed on any site", "Priority support", "Booking analytics"],
     highlighted: true,
+    color: "#0891b2",
   },
   {
     name: "Business",
@@ -81,6 +83,7 @@ const PRICING = [
     desc: "For agencies & multi-location",
     features: ["Unlimited widgets", "SMS + email notifications", "Dashboard inbox", "All industries", "Custom branding", "API access", "Dedicated support", "White-label option"],
     highlighted: false,
+    color: "#8b5cf6",
   },
 ];
 
@@ -135,12 +138,12 @@ export default function LandingPage() {
       {/* ═══ NAV ═══ */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#0f172a]/80 border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="BookButton" width={72} height={72} />
             <span className="text-white font-bold text-lg tracking-tight" style={{ fontFamily: "var(--font-dm-sans)" }}>
               Book<span className="text-[#22d3ee]">Button</span>
             </span>
-          </div>
+          </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#how-it-works" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">How it works</a>
             <a href="#industries" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">Industries</a>
@@ -248,17 +251,17 @@ export default function LandingPage() {
                   <div className="px-5 py-4">
                     <p className="text-[9px] font-bold text-white/60 mb-2">Our Services</p>
                     <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-white/5 rounded-lg p-2.5 text-center">
-                        <span className="text-sm">🚰</span>
-                        <p className="text-[7px] text-white/50 mt-1">Blocked Drains</p>
+                      <div className="bg-white/5 rounded-lg p-3 text-center">
+                        <span className="text-2xl">🚰</span>
+                        <p className="text-[10px] text-white/60 mt-1.5 font-medium">Blocked Drains</p>
                       </div>
-                      <div className="bg-white/5 rounded-lg p-2.5 text-center">
-                        <span className="text-sm">🔥</span>
-                        <p className="text-[7px] text-white/50 mt-1">Hot Water</p>
+                      <div className="bg-white/5 rounded-lg p-3 text-center">
+                        <span className="text-2xl">🔥</span>
+                        <p className="text-[10px] text-white/60 mt-1.5 font-medium">Hot Water</p>
                       </div>
-                      <div className="bg-white/5 rounded-lg p-2.5 text-center">
-                        <span className="text-sm">🔧</span>
-                        <p className="text-[7px] text-white/50 mt-1">Gas Fitting</p>
+                      <div className="bg-white/5 rounded-lg p-3 text-center">
+                        <span className="text-2xl">🔧</span>
+                        <p className="text-[10px] text-white/60 mt-1.5 font-medium">Gas Fitting</p>
                       </div>
                     </div>
                   </div>
@@ -266,7 +269,7 @@ export default function LandingPage() {
               </div>
 
               {/* Floating BookButton overlay */}
-              <div className="absolute bottom-4 left-4 animate-pulse-teal">
+              <div className="absolute -bottom-12 left-4 animate-pulse-teal z-10">
                 <div className="flex items-center gap-2 pl-5 pr-3 py-2 rounded-full shadow-xl text-white text-sm font-semibold"
                   style={{ background: "#0891b2" }}>
                   Book Online
@@ -504,13 +507,17 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {PRICING.map((plan) => (
               <Reveal key={plan.name}>
-                <div className={`card-hover rounded-2xl p-8 flex flex-col ${
-                  plan.highlighted
-                    ? "bg-white border-2 border-[#0891b2] pricing-glow relative"
-                    : "bg-white border border-gray-200"
-                }`}>
+                <div
+                  className={`border-chase-always card-hover rounded-2xl p-8 flex flex-col ${
+                    plan.highlighted
+                      ? "bg-white pricing-glow relative"
+                      : "bg-white"
+                  }`}
+                  style={{ "--chase-color": plan.color } as React.CSSProperties}
+                >
+                  <div className="chase-border-wrap" />
                   {plan.highlighted && (
-                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#0891b2] to-[#22d3ee] text-white text-xs font-bold uppercase tracking-wider">
+                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10 px-4 py-1 rounded-full bg-gradient-to-r from-[#0891b2] to-[#22d3ee] text-white text-xs font-bold uppercase tracking-wider">
                       Most Popular
                     </div>
                   )}
@@ -665,12 +672,12 @@ export default function LandingPage() {
       <footer className="bg-[#0a0f1a] border-t border-white/5 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <Image src="/logo.png" alt="BookButton" width={60} height={60} />
               <span className="text-white font-bold tracking-tight">
                 Book<span className="text-[#22d3ee]">Button</span>
               </span>
-            </div>
+            </Link>
             <div className="flex items-center gap-8 text-sm text-gray-500">
               <a href="#how-it-works" className="hover:text-[#22d3ee] transition-colors">How it works</a>
               <a href="#industries" className="hover:text-[#22d3ee] transition-colors">Industries</a>

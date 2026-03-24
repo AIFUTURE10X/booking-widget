@@ -209,6 +209,46 @@ body {
   inherits: false;
 }
 
+/* Continuous border color running around edges */
+.border-chase-always {
+  position: relative;
+  isolation: isolate;
+  border: none !important;
+}
+
+.border-chase-always > .chase-border-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.border-chase-always > .chase-border-wrap::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: conic-gradient(from 0deg, transparent 60%, var(--chase-color, #22d3ee) 78%, transparent 95%);
+  animation: spin-chase 4s linear infinite;
+}
+
+.border-chase-always > .chase-border-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: calc(1rem - 2px);
+  background: white;
+}
+
+@keyframes spin-chase {
+  to { rotate: 360deg; }
+}
+
 /* Code block styling */
 .code-block {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
