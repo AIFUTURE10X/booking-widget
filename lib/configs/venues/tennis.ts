@@ -21,4 +21,6 @@ export const tennisConfig: VenueConfig = {
   maxGroupSize: 8,
   states: ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
   cancellationPolicy: "Free cancellation up to 24 hours before your booking. Late cancellations may incur a 50% fee.",
+  pricePerHour: 30,
+  currency: "aud",
 };

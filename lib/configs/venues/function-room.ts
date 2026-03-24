@@ -21,4 +21,6 @@ export const functionRoomConfig: VenueConfig = {
   maxGroupSize: 200,
   states: ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
   cancellationPolicy: "Free cancellation up to 24 hours before. Late cancellations may incur a fee.",
+  pricePerHour: 150,
+  currency: "aud",
 };

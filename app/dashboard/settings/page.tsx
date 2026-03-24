@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail, MessageSquare, Calendar, Shield, Check, Loader2 } from "lucide-react";
+import { Mail, MessageSquare, Calendar, Shield, Check, Loader2, CreditCard } from "lucide-react";
 
 interface EnvStatus {
   resend: boolean;
   sms: boolean;
   googleCalendar: boolean;
   dashboardPin: boolean;
+  stripe: boolean;
 }
 
 export default function SettingsPage() {
@@ -48,6 +49,15 @@ export default function SettingsPage() {
       envVars: ["GOOGLE_CALENDAR_CLIENT_EMAIL", "GOOGLE_CALENDAR_PRIVATE_KEY", "GOOGLE_CALENDAR_ID"],
       setup: "1. Create Google Cloud project\n2. Enable Calendar API\n3. Create service account + JSON key\n4. Share your calendar with the service account email\n5. Add env vars to Vercel",
       color: "#2563eb",
+    },
+    {
+      key: "stripe" as const,
+      icon: CreditCard,
+      title: "Stripe Payments",
+      desc: "Accept upfront payments for venue reservations via Stripe Checkout.",
+      envVars: ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"],
+      setup: "1. Create a Stripe account at stripe.com\n2. Get your Secret Key from Developers > API Keys\n3. Add STRIPE_SECRET_KEY to Vercel env vars\n4. Create a webhook endpoint pointing to /api/webhook\n5. Add STRIPE_WEBHOOK_SECRET to Vercel env vars",
+      color: "#6366f1",
     },
     {
       key: "dashboardPin" as const,

@@ -23,4 +23,6 @@ export const equipmentRentalConfig: VenueConfig = {
   maxGroupSize: 1,
   states: ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
   cancellationPolicy: "Free cancellation up to 24 hours before. Late cancellations may incur a fee.",
+  pricePerHour: 25,
+  currency: "aud",
 };

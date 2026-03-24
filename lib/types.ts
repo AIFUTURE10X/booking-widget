@@ -90,6 +90,8 @@ export interface VenueConfig {
   maxGroupSize: number;
   states: string[];
   cancellationPolicy?: string; // e.g. "Free cancellation up to 24 hours before"
+  pricePerHour?: number;       // e.g. 30 (AUD) — enables Stripe checkout
+  currency?: string;           // e.g. "aud", defaults to "aud"
 }
 
 export interface ReservationWidgetConfig {

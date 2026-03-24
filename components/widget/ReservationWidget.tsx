@@ -77,22 +77,57 @@ export function ReservationWidget({ venue, widget, buttonText }: Props) {
     }
   }
 
+  const hasPricing = !!venue.pricePerHour && venue.pricePerHour > 0;
+  const totalPrice = hasPricing ? (venue.pricePerHour! * (data.duration / 60)) : 0;
+  const currencySymbol = (venue.currency || "aud") === "aud" ? "$" : "$";
+
   async function handleSubmit() {
     setSubmitting(true);
     try {
-      const endpoint = widget.apiEndpoint || "/api/reservations";
-      await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          widgetConfigId: widget.configId,
-          businessName: widget.businessName,
-          submittedAt: new Date().toISOString(),
-          status: "pending",
-        }),
-      });
-      setSubmitted(true);
+      if (hasPricing) {
+        // Redirect to Stripe Checkout
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            facility: selectedFacility?.label || data.facility,
+            activity: data.activity,
+            date: data.date,
+            timeSlot: data.timeSlot,
+            duration: data.duration,
+            groupSize: data.groupSize,
+            pricePerHour: venue.pricePerHour,
+            currency: venue.currency || "aud",
+            businessName: widget.businessName,
+            customerEmail: data.email,
+            customerName: `${data.firstName} ${data.lastName}`,
+            widgetConfigId: widget.configId,
+            reservationData: data,
+          }),
+        });
+        const result = await res.json();
+        if (result.url) {
+          window.location.href = result.url;
+          return; // Don't reset submitting — page is navigating away
+        } else {
+          alert(result.error || "Could not start checkout. Please try again.");
+        }
+      } else {
+        // No pricing — submit directly
+        const endpoint = widget.apiEndpoint || "/api/reservations";
+        await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...data,
+            widgetConfigId: widget.configId,
+            businessName: widget.businessName,
+            submittedAt: new Date().toISOString(),
+            status: "pending",
+          }),
+        });
+        setSubmitted(true);
+      }
     } catch {
       alert("Something went wrong. Please try again.");
     } finally {
@@ -402,6 +437,19 @@ export function ReservationWidget({ venue, widget, buttonText }: Props) {
                         <p className="text-sm">{data.groupSize} people</p>
                       </div>
                     )}
+
+                    {/* Price */}
+                    {hasPricing && data.duration > 0 && (
+                      <div className="mt-3 p-3 rounded-lg border-2 flex items-center justify-between" style={{ borderColor: accent, background: `${accent}08` }}>
+                        <div>
+                          <p className="text-xs text-gray-500">{currencySymbol}{venue.pricePerHour}/hr &times; {data.duration / 60} hr{data.duration > 60 ? "s" : ""}</p>
+                          <p className="text-lg font-bold" style={{ color: accent }}>{currencySymbol}{totalPrice.toFixed(2)}</p>
+                        </div>
+                        <span className="text-[10px] font-semibold uppercase px-2 py-1 rounded" style={{ background: `${accent}15`, color: accent }}>
+                          Pay online
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="border-t pt-4">
@@ -499,7 +547,7 @@ export function ReservationWidget({ venue, widget, buttonText }: Props) {
                     className="px-6 py-2 rounded-lg text-white text-sm font-medium disabled:opacity-50"
                     style={{ background: accent }}
                   >
-                    {submitting ? "Submitting..." : "Confirm Reservation"}
+                    {submitting ? "Processing..." : hasPricing ? `Pay ${currencySymbol}${totalPrice.toFixed(2)} & Book` : "Confirm Reservation"}
                   </button>
                 )}
               </div>

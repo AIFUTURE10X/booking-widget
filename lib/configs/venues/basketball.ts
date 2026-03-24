@@ -20,4 +20,6 @@ export const basketballConfig: VenueConfig = {
   maxGroupSize: 20,
   states: ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
   cancellationPolicy: "Free cancellation up to 24 hours before. Late cancellations may incur a 50% fee.",
+  pricePerHour: 40,
+  currency: "aud",
 };
