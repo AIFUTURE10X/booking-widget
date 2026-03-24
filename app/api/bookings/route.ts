@@ -1,39 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { BookingSubmission } from "@/lib/types";
-import { saveBooking, getAllBookings, updateBookingStatus } from "@/lib/storage/bookings";
-import { getWidget } from "@/lib/storage/widgets";
+import { db } from "@/lib/db";
+import { bbBookings, bbWidgets } from "@/lib/schema";
+import { eq, desc } from "drizzle-orm";
 import { sendBookingEmail } from "@/lib/notifications/email";
 import { sendBookingSms } from "@/lib/notifications/sms";
 
 /**
  * POST /api/bookings — receives booking submissions from the widget.
- * Level 1: Stores booking + sends email/SMS notifications
- * Level 2: Available in dashboard inbox via GET
  */
 export async function POST(req: NextRequest) {
   try {
-    const booking: BookingSubmission = await req.json();
+    const data = await req.json();
 
-    if (!booking.firstName || !booking.phone || !booking.category || !booking.specificService) {
+    if (!data.firstName || !data.phone || !data.category || !data.specificService) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Store the booking
-    const bookingId = saveBooking(booking);
+    const bookingRef = `BK-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+    await db.insert(bbBookings).values({
+      bookingRef,
+      widgetConfigId: data.widgetConfigId || "",
+      businessName: data.businessName || "",
+      status: "pending",
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      email: data.email,
+      category: data.category,
+      serviceType: data.serviceType,
+      specificService: data.specificService,
+      preferredDate: data.preferredDate,
+      preferredTime: data.preferredTime,
+      postcode: data.postcode,
+      address: data.address,
+      addressLine2: data.addressLine2,
+      city: data.city,
+      state: data.state,
+      isOwner: data.isOwner ? "true" : "false",
+      notes: data.notes,
+    });
 
     // Send notifications (non-blocking)
-    const widget = getWidget(booking.widgetConfigId);
-    if (widget?.notifyEmail) {
-      sendBookingEmail(booking, widget.notifyEmail).catch(console.error);
-    }
-    if (widget?.notifySms) {
-      sendBookingSms(booking, widget.notifySms).catch(console.error);
+    if (data.widgetConfigId) {
+      const widgets = await db.select().from(bbWidgets).where(eq(bbWidgets.configId, data.widgetConfigId)).limit(1);
+      const widget = widgets[0];
+      if (widget?.notifyEmail) {
+        sendBookingEmail(data, widget.notifyEmail).catch(console.error);
+      }
+      if (widget?.notifySms) {
+        sendBookingSms(data, widget.notifySms).catch(console.error);
+      }
     }
 
-    console.log(`[Booking] ${bookingId} — ${booking.firstName} ${booking.lastName} — ${booking.specificService}`);
+    console.log(`[Booking] ${bookingRef} — ${data.firstName} ${data.lastName} — ${data.specificService}`);
 
-    return NextResponse.json({ success: true, bookingId });
-  } catch {
+    return NextResponse.json({ success: true, bookingId: bookingRef });
+  } catch (err) {
+    console.error("[Booking] Error:", err);
     return NextResponse.json({ error: "Invalid booking data" }, { status: 400 });
   }
 }
@@ -45,10 +69,38 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const widgetId = searchParams.get("widgetId");
 
-  const bookings = getAllBookings();
-  const filtered = widgetId ? bookings.filter((b) => b.widgetConfigId === widgetId) : bookings;
+  let bookings;
+  if (widgetId) {
+    bookings = await db.select().from(bbBookings).where(eq(bbBookings.widgetConfigId, widgetId)).orderBy(desc(bbBookings.submittedAt));
+  } else {
+    bookings = await db.select().from(bbBookings).orderBy(desc(bbBookings.submittedAt));
+  }
 
-  return NextResponse.json(filtered);
+  // Map to frontend format
+  const mapped = bookings.map((b) => ({
+    id: b.bookingRef,
+    widgetConfigId: b.widgetConfigId,
+    businessName: b.businessName,
+    status: b.status,
+    firstName: b.firstName,
+    lastName: b.lastName,
+    phone: b.phone,
+    email: b.email,
+    category: b.category,
+    serviceType: b.serviceType,
+    specificService: b.specificService,
+    preferredDate: b.preferredDate,
+    preferredTime: b.preferredTime,
+    postcode: b.postcode,
+    address: b.address,
+    addressLine2: b.addressLine2,
+    city: b.city,
+    state: b.state,
+    notes: b.notes,
+    submittedAt: b.submittedAt,
+  }));
+
+  return NextResponse.json(mapped);
 }
 
 /**
@@ -60,10 +112,16 @@ export async function PATCH(req: NextRequest) {
     if (!id || !status) {
       return NextResponse.json({ error: "Missing id or status" }, { status: 400 });
     }
-    const updated = updateBookingStatus(id, status);
-    if (!updated) {
+
+    const result = await db.update(bbBookings)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(bbBookings.bookingRef, id))
+      .returning();
+
+    if (result.length === 0) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
+
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });

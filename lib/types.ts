@@ -25,6 +25,8 @@ export interface WidgetConfig {
   businessName: string;
   /** Business phone number */
   phone: string;
+  /** Which industry config this widget uses */
+  industryId?: string;
   /** Brand accent color (hex) */
   accentColor: string;
   /** Optional: override which categories to show (subset of industry config) */

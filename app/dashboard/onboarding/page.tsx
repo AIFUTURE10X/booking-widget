@@ -83,6 +83,7 @@ export default function OnboardingPage() {
 
     const widget: WidgetConfig = {
       configId,
+      industryId: selectedIndustry,
       businessName,
       phone,
       accentColor,
