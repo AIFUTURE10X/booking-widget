@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { bbBookings, bbWidgets } from "@/lib/schema";
 import { eq, desc } from "drizzle-orm";
-import { sendBookingEmail } from "@/lib/notifications/email";
+import { sendBookingEmail, sendCustomerConfirmationEmail } from "@/lib/notifications/email";
 import { sendBookingSms } from "@/lib/notifications/sms";
+import { createCalendarEvent } from "@/lib/integrations/google-calendar";
 
 /**
  * POST /api/bookings — receives booking submissions from the widget.
@@ -41,10 +42,12 @@ export async function POST(req: NextRequest) {
       notes: data.notes,
     });
 
-    // Send notifications (non-blocking)
+    // Look up widget config for notifications
+    let widgetPhone = "";
     if (data.widgetConfigId) {
       const widgets = await db.select().from(bbWidgets).where(eq(bbWidgets.configId, data.widgetConfigId)).limit(1);
       const widget = widgets[0];
+      widgetPhone = widget?.phone || "";
       if (widget?.notifyEmail) {
         sendBookingEmail(data, widget.notifyEmail).catch(console.error);
       }
@@ -52,6 +55,24 @@ export async function POST(req: NextRequest) {
         sendBookingSms(data, widget.notifySms).catch(console.error);
       }
     }
+
+    // Send confirmation email to the customer
+    if (data.email) {
+      const submissionData = { ...data, widgetConfigId: data.widgetConfigId || "", submittedAt: new Date().toISOString(), status: "pending" as const };
+      sendCustomerConfirmationEmail(submissionData, widgetPhone).catch(console.error);
+    }
+
+    // Create Google Calendar event (non-blocking)
+    createCalendarEvent({
+      title: `${data.specificService} — ${data.firstName} ${data.lastName}`,
+      description: `${data.category} > ${data.serviceType} > ${data.specificService}${data.notes ? `\nNotes: ${data.notes}` : ""}${data.recurring ? `\nRecurring: ${data.recurring}` : ""}`,
+      date: data.preferredDate,
+      timeSlot: data.preferredTime,
+      location: [data.address, data.city, data.state, data.postcode].filter(Boolean).join(", "),
+      customerName: `${data.firstName} ${data.lastName}`,
+      customerPhone: data.phone,
+      customerEmail: data.email,
+    }).catch(console.error);
 
     console.log(`[Booking] ${bookingRef} — ${data.firstName} ${data.lastName} — ${data.specificService}`);
 

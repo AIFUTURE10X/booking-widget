@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   Calendar, X, Phone, MapPin, Wrench, ChevronRight, Check,
-  FileText, Clock, User, Mail,
+  FileText, Clock, User, Mail, Camera, Repeat, AlertCircle,
 } from "lucide-react";
 import type { IndustryConfig, WidgetConfig, BookingData } from "@/lib/types";
 
@@ -29,8 +29,28 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
   const [data, setData] = useState<BookingData>({ ...INITIAL_DATA, state: industry.states[0] || "" });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [photos, setPhotos] = useState<string[]>([]);
+
+  // After-hours detection
+  const isAfterHours = (() => {
+    if (!industry.businessHours) return false;
+    const now = new Date();
+    const currentMins = now.getHours() * 60 + now.getMinutes();
+    const [openH, openM] = industry.businessHours.open.split(":").map(Number);
+    const [closeH, closeM] = industry.businessHours.close.split(":").map(Number);
+    return currentMins < openH * 60 + openM || currentMins >= closeH * 60 + closeM;
+  })();
 
   const accent = widget.accentColor || "#0891b2";
+
+  // Analytics tracking helper
+  function trackEvent(event: string, stepNum?: number) {
+    fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ widgetConfigId: widget.configId, event, step: stepNum }),
+    }).catch(() => {});
+  }
 
   // Filter categories if widget specifies a subset
   const categories = widget.enabledCategories
@@ -55,6 +75,20 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
     }
   }
 
+  function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.result) {
+          setPhotos((prev) => [...prev.slice(0, 4), reader.result as string]); // max 5
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function handleSubmit() {
     setSubmitting(true);
     try {
@@ -64,6 +98,7 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
+          photoUrls: photos.length > 0 ? photos : undefined,
           widgetConfigId: widget.configId,
           businessName: widget.businessName,
           submittedAt: new Date().toISOString(),
@@ -71,6 +106,7 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
         }),
       });
       setSubmitted(true);
+      trackEvent("submit");
     } catch {
       alert("Something went wrong. Please try again.");
     } finally {
@@ -96,7 +132,7 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
     <>
       {/* Floating button */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); trackEvent("open"); }}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 pl-5 pr-3 py-2 rounded-full shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]"
         style={{ background: accent }}
       >
@@ -162,6 +198,20 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto px-6 py-5">
+              {/* After-hours notice */}
+              {isAfterHours && !submitted && step === 0 && (
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 mb-4">
+                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-amber-800">We&apos;re currently closed</p>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      You can still submit a booking and we&apos;ll get back to you during business hours
+                      ({industry.businessHours?.open} – {industry.businessHours?.close}).
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {submitted ? (
                 /* Success */
                 <div className="text-center py-8">
@@ -427,6 +477,51 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
                     </div>
                   </div>
 
+                  {/* Photo upload */}
+                  <div className="border-t pt-4">
+                    <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5">
+                      <Camera className="h-3.5 w-3.5" style={{ color: accent }} />
+                      Attach photos <span className="text-gray-400 font-normal">(Optional)</span>
+                    </h3>
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 text-sm text-gray-500 cursor-pointer hover:border-gray-400 transition-colors">
+                      <Camera className="h-4 w-4" />
+                      {photos.length > 0 ? `${photos.length} photo${photos.length > 1 ? "s" : ""} attached` : "Tap to add a photo"}
+                      <input type="file" accept="image/*" multiple onChange={handlePhotoUpload} className="hidden" />
+                    </label>
+                    {photos.length > 0 && (
+                      <div className="flex gap-2 mt-2">
+                        {photos.map((p, i) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={i} src={p} alt={`Photo ${i + 1}`} className="w-14 h-14 rounded-lg object-cover border" />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Recurring option */}
+                  <div className="border-t pt-4">
+                    <h3 className="text-sm font-bold mb-2 flex items-center gap-1.5">
+                      <Repeat className="h-3.5 w-3.5" style={{ color: accent }} />
+                      Recurring? <span className="text-gray-400 font-normal">(Optional)</span>
+                    </h3>
+                    <div className="flex gap-2">
+                      {["", "weekly", "fortnightly", "monthly"].map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => update({ recurring: opt })}
+                          className="px-3 py-1.5 rounded-full border text-xs font-medium transition-all"
+                          style={{
+                            borderColor: (data.recurring || "") === opt ? accent : "#d1d5db",
+                            background: (data.recurring || "") === opt ? `${accent}10` : "transparent",
+                            color: (data.recurring || "") === opt ? accent : "#374151",
+                          }}
+                        >
+                          {opt || "One-time"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="border-t pt-4">
                     <h3 className="text-sm font-bold mb-2">
                       Additional notes <span className="text-gray-400 font-normal">(Optional)</span>
@@ -465,7 +560,7 @@ export function BookingWidget({ industry, widget, buttonText }: Props) {
                 )}
                 {step < 4 ? (
                   <button
-                    onClick={() => setStep(step + 1)}
+                    onClick={() => { setStep(step + 1); trackEvent("step", step + 1); }}
                     disabled={!canContinue()}
                     className="px-6 py-2 rounded-lg text-white text-sm font-medium flex items-center gap-1 disabled:opacity-50"
                     style={{ background: accent }}

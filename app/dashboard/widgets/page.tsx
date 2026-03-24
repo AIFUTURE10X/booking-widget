@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Copy, ExternalLink, Trash2, Loader2, PlusCircle } from "lucide-react";
+import { Copy, ExternalLink, Trash2, Loader2, PlusCircle, Pencil, Save, X } from "lucide-react";
 import type { WidgetConfig } from "@/lib/types";
 
 export default function WidgetsPage() {
   const [widgets, setWidgets] = useState<WidgetConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState("");
+  const [editingId, setEditingId] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetch("/api/widgets")
@@ -22,6 +27,39 @@ export default function WidgetsPage() {
     navigator.clipboard.writeText(code);
     setCopiedId(w.configId);
     setTimeout(() => setCopiedId(""), 2000);
+  }
+
+  function startEdit(w: WidgetConfig) {
+    setEditingId(w.configId);
+    setEditName(w.businessName);
+    setEditPhone(w.phone);
+    setEditEmail(w.notifyEmail || "");
+  }
+
+  async function handleSave(configId: string) {
+    setSaving(true);
+    const widget = widgets.find((w) => w.configId === configId);
+    if (!widget) return;
+
+    await fetch("/api/widgets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...widget,
+        businessName: editName,
+        phone: editPhone,
+        notifyEmail: editEmail || undefined,
+      }),
+    });
+
+    setWidgets((prev) =>
+      prev.map((w) => w.configId === configId
+        ? { ...w, businessName: editName, phone: editPhone, notifyEmail: editEmail || undefined }
+        : w
+      )
+    );
+    setEditingId("");
+    setSaving(false);
   }
 
   async function handleDelete(configId: string) {
@@ -86,31 +124,71 @@ export default function WidgetsPage() {
                 </button>
               </div>
 
-              <div className="space-y-1.5 text-sm text-gray-600 mb-4">
-                <p>Phone: {w.phone}</p>
-                {w.notifyEmail && <p>Notify: {w.notifyEmail}</p>}
-                <div className="flex items-center gap-2">
-                  <span>Color:</span>
-                  <div className="w-4 h-4 rounded-full" style={{ background: w.accentColor }} />
-                  <span className="text-xs font-mono text-gray-400">{w.accentColor}</span>
+              {editingId === w.configId ? (
+                <div className="space-y-2 mb-4">
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Business Name</label>
+                    <input value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full h-8 rounded-lg border border-gray-300 px-2 text-sm mt-0.5" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Phone</label>
+                    <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} className="w-full h-8 rounded-lg border border-gray-300 px-2 text-sm mt-0.5" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-500">Notify Email</label>
+                    <input value={editEmail} onChange={(e) => setEditEmail(e.target.value)} className="w-full h-8 rounded-lg border border-gray-300 px-2 text-sm mt-0.5" />
+                  </div>
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleSave(w.configId)}
+                      disabled={saving}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-600 text-white text-xs font-medium hover:bg-cyan-700 transition-colors disabled:opacity-50"
+                    >
+                      <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                      onClick={() => setEditingId("")}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <X className="h-3.5 w-3.5" /> Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="space-y-1.5 text-sm text-gray-600 mb-4">
+                    <p>Phone: {w.phone}</p>
+                    {w.notifyEmail && <p>Notify: {w.notifyEmail}</p>}
+                    <div className="flex items-center gap-2">
+                      <span>Color:</span>
+                      <div className="w-4 h-4 rounded-full" style={{ background: w.accentColor }} />
+                      <span className="text-xs font-mono text-gray-400">{w.accentColor}</span>
+                    </div>
+                  </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => copyEmbed(w)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                >
-                  <Copy className="h-3.5 w-3.5" />
-                  {copiedId === w.configId ? "Copied!" : "Copy Embed"}
-                </button>
-                <Link
-                  href="/preview"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" /> Preview
-                </Link>
-              </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => startEdit(w)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => copyEmbed(w)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                      {copiedId === w.configId ? "Copied!" : "Copy Embed"}
+                    </button>
+                    <Link
+                      href="/preview"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" /> Preview
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>

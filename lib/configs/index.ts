@@ -19,6 +19,16 @@ import { towingConfig } from "./towing";
 import { dentalConfig } from "./dental";
 import { beautySalonConfig } from "./beauty-salon";
 import { realEstateConfig } from "./real-estate";
+import { carpetCleaningConfig } from "./carpet-cleaning";
+import { windowCleaningConfig } from "./window-cleaning";
+import { treeServicesConfig } from "./tree-services";
+import { concretingConfig } from "./concreting";
+import { tilingConfig } from "./tiling";
+import { plasteringConfig } from "./plastering";
+import { skipBinsConfig } from "./skip-bins";
+import { glazierConfig } from "./glazier";
+import { applianceRepairConfig } from "./appliance-repair";
+import { petGroomingConfig } from "./pet-grooming";
 
 /** Registry of all industry configs */
 export const industryConfigs: Record<string, IndustryConfig> = {
@@ -42,6 +52,16 @@ export const industryConfigs: Record<string, IndustryConfig> = {
   dental: dentalConfig,
   "beauty-salon": beautySalonConfig,
   "real-estate": realEstateConfig,
+  "carpet-cleaning": carpetCleaningConfig,
+  "window-cleaning": windowCleaningConfig,
+  "tree-services": treeServicesConfig,
+  concreting: concretingConfig,
+  tiling: tilingConfig,
+  plastering: plasteringConfig,
+  "skip-bins": skipBinsConfig,
+  glazier: glazierConfig,
+  "appliance-repair": applianceRepairConfig,
+  "pet-grooming": petGroomingConfig,
 };
 
 export function getIndustryConfig(id: string): IndustryConfig | null {

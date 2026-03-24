@@ -1,0 +1,80 @@
+CREATE TABLE "bb_bookings" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"booking_ref" text NOT NULL,
+	"widget_config_id" text NOT NULL,
+	"business_name" text NOT NULL,
+	"status" text DEFAULT 'pending' NOT NULL,
+	"first_name" text NOT NULL,
+	"last_name" text NOT NULL,
+	"phone" text NOT NULL,
+	"email" text NOT NULL,
+	"category" text NOT NULL,
+	"service_type" text NOT NULL,
+	"specific_service" text NOT NULL,
+	"preferred_date" text NOT NULL,
+	"preferred_time" text NOT NULL,
+	"postcode" text,
+	"address" text,
+	"address_line2" text,
+	"city" text,
+	"state" text,
+	"is_owner" text,
+	"notes" text,
+	"submitted_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "bb_bookings_booking_ref_unique" UNIQUE("booking_ref")
+);
+--> statement-breakpoint
+CREATE TABLE "bb_reservations" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"reservation_ref" text NOT NULL,
+	"widget_config_id" text NOT NULL,
+	"business_name" text NOT NULL,
+	"status" text DEFAULT 'pending' NOT NULL,
+	"first_name" text NOT NULL,
+	"last_name" text NOT NULL,
+	"phone" text NOT NULL,
+	"email" text NOT NULL,
+	"facility" text NOT NULL,
+	"activity" text NOT NULL,
+	"date" text NOT NULL,
+	"time_slot" text NOT NULL,
+	"duration" integer NOT NULL,
+	"group_size" integer DEFAULT 1 NOT NULL,
+	"notes" text,
+	"submitted_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "bb_reservations_reservation_ref_unique" UNIQUE("reservation_ref")
+);
+--> statement-breakpoint
+CREATE TABLE "bb_venue_widgets" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"config_id" text NOT NULL,
+	"venue_type_id" text NOT NULL,
+	"business_name" text NOT NULL,
+	"phone" text NOT NULL,
+	"accent_color" text DEFAULT '#8b5cf6',
+	"notify_email" text,
+	"notify_sms" text,
+	"enabled_facilities" jsonb,
+	"enabled_activities" jsonb,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "bb_venue_widgets_config_id_unique" UNIQUE("config_id")
+);
+--> statement-breakpoint
+CREATE TABLE "bb_widgets" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"config_id" text NOT NULL,
+	"industry_id" text NOT NULL,
+	"business_name" text NOT NULL,
+	"phone" text NOT NULL,
+	"accent_color" text DEFAULT '#0891b2',
+	"notify_email" text,
+	"notify_sms" text,
+	"enabled_categories" jsonb,
+	"custom_services" jsonb,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "bb_widgets_config_id_unique" UNIQUE("config_id")
+);

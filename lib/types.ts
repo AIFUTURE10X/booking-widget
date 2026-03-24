@@ -16,6 +16,7 @@ export interface IndustryConfig {
   states: string[];
   propertyQuestion?: string; // e.g. "I am the owner of this property"
   urgencyOptions?: string[]; // e.g. ["Routine", "Urgent", "Emergency"]
+  businessHours?: { open: string; close: string }; // e.g. { open: "07:00", close: "18:00" }
 }
 
 export interface WidgetConfig {
@@ -58,9 +59,68 @@ export interface BookingData {
   city: string;
   state: string;
   notes: string;
+  photoUrls?: string[];       // URLs of uploaded photos
+  recurring?: string;          // e.g. "weekly", "fortnightly", "monthly", ""
 }
 
 export interface BookingSubmission extends BookingData {
+  widgetConfigId: string;
+  businessName: string;
+  submittedAt: string;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+}
+
+/* ─── Reservation Booking (venues / courts / rooms) ──────────────────────── */
+
+export interface Facility {
+  id: string;
+  label: string;
+  emoji: string;
+  description?: string;
+}
+
+export interface VenueConfig {
+  venueType: string;
+  title: string;
+  facilities: Facility[];
+  activities: string[];
+  durations: { label: string; minutes: number }[];
+  operatingHours: { open: string; close: string }; // e.g. "06:00", "22:00"
+  slotInterval: number; // minutes between slots (e.g. 30)
+  maxGroupSize: number;
+  states: string[];
+  cancellationPolicy?: string; // e.g. "Free cancellation up to 24 hours before"
+}
+
+export interface ReservationWidgetConfig {
+  configId: string;
+  businessName: string;
+  phone: string;
+  venueTypeId?: string;
+  accentColor: string;
+  enabledFacilities?: string[];
+  enabledActivities?: string[];
+  apiEndpoint?: string;
+  notifyEmail?: string;
+  notifySms?: string;
+}
+
+export interface ReservationData {
+  facility: string;
+  activity: string;
+  date: string;
+  timeSlot: string;
+  duration: number; // minutes
+  groupSize: number;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  notes: string;
+  recurring?: string; // e.g. "weekly", "fortnightly", "monthly", ""
+}
+
+export interface ReservationSubmission extends ReservationData {
   widgetConfigId: string;
   businessName: string;
   submittedAt: string;

@@ -6,23 +6,26 @@
   var script = scripts[scripts.length - 1];
   if (!script) return;
 
-  var config = script.getAttribute("data-config") || "plumbing";
+  var widgetType = script.getAttribute("data-type") || "service"; // "service" or "reservation"
+  var config = script.getAttribute("data-config") || (widgetType === "reservation" ? "tennis" : "plumbing");
   var widgetId = script.getAttribute("data-widget-id") || "";
   var business = script.getAttribute("data-business") || "Book Online";
   var phone = script.getAttribute("data-phone") || "";
-  var color = script.getAttribute("data-color") || "#0891b2";
+  var color = script.getAttribute("data-color") || (widgetType === "reservation" ? "#8b5cf6" : "#0891b2");
   var host = script.getAttribute("data-host") || script.src.replace(/\/widget\.js.*$/, "");
-  var buttonText = script.getAttribute("data-button-text") || "Book Online";
+  var buttonText = script.getAttribute("data-button-text") || (widgetType === "reservation" ? "Book a Spot" : "Book Online");
   var position = script.getAttribute("data-position") || "bottom-left";
 
-  // Build the embed URL
-  var embedUrl = host + "/embed"
+  // Build the embed URL based on widget type
+  var embedPage = widgetType === "reservation" ? "/embed-reservation" : "/embed";
+  var apiPath = widgetType === "reservation" ? "/api/reservations" : "/api/bookings";
+  var embedUrl = host + embedPage
     + "?config=" + encodeURIComponent(config)
     + "&widgetId=" + encodeURIComponent(widgetId)
     + "&business=" + encodeURIComponent(business)
     + "&phone=" + encodeURIComponent(phone)
     + "&color=" + encodeURIComponent(color)
-    + "&api=" + encodeURIComponent(host + "/api/bookings");
+    + "&api=" + encodeURIComponent(host + apiPath);
 
   // Inject styles
   var style = document.createElement("style");

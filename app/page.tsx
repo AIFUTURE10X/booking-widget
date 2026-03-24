@@ -24,9 +24,6 @@ const INDUSTRIES_LIVE = [
   { emoji: "\uD83D\uDD10", label: "Locksmith", desc: "Residential, commercial, automotive" },
   { emoji: "\u2728", label: "Cleaning", desc: "Home, commercial, end-of-lease" },
   { emoji: "\uD83C\uDF3F", label: "Landscaping", desc: "Lawn, gardens, tree services" },
-];
-
-const INDUSTRIES_COMING = [
   { emoji: "\u26A1", label: "Electrical", desc: "Wiring, switches, lighting" },
   { emoji: "\uD83C\uDFE0", label: "Roofing", desc: "Repairs, gutters, replacements" },
   { emoji: "\uD83C\uDFA8", label: "Painting", desc: "Interior, exterior, commercial" },
@@ -42,7 +39,29 @@ const INDUSTRIES_COMING = [
   { emoji: "\uD83D\uDCE6", label: "Garage Doors", desc: "Install, repair, motors" },
   { emoji: "\uD83D\uDD12", label: "Security", desc: "Alarms, CCTV, access control" },
   { emoji: "\uD83D\uDE8C", label: "Towing", desc: "Roadside assist, transport" },
-  { emoji: "\uD83C\uDFC0", label: "Sports & Venues", desc: "Court hire, field booking" },
+  { emoji: "\uD83E\uDDF9", label: "Carpet Cleaning", desc: "Carpet, upholstery, rugs" },
+  { emoji: "\uD83E\uDE9F", label: "Window Cleaning", desc: "Residential, commercial" },
+  { emoji: "\uD83E\uDE93", label: "Tree Services", desc: "Removal, pruning, stumps" },
+  { emoji: "\uD83E\uDDF1", label: "Concreting", desc: "Driveways, slabs, paths" },
+  { emoji: "\u2B1C", label: "Tiling", desc: "Bathroom, kitchen, floor" },
+  { emoji: "\uD83C\uDFE0", label: "Plastering", desc: "Render, cornice, repairs" },
+  { emoji: "\uD83D\uDDD1\uFE0F", label: "Skip Bins", desc: "Waste removal, cleanouts" },
+  { emoji: "\uD83E\uDE9E", label: "Glazier", desc: "Glass, windows, showers" },
+  { emoji: "\uD83D\uDD0C", label: "Appliance Repair", desc: "Fridge, washer, oven" },
+  { emoji: "\uD83D\uDC36", label: "Pet Grooming", desc: "Dogs, cats, mobile" },
+];
+
+const VENUES_LIVE = [
+  { emoji: "\uD83C\uDFBE", label: "Tennis / Courts", desc: "Court hire, pickleball" },
+  { emoji: "\uD83C\uDFC0", label: "Basketball / Futsal", desc: "Indoor courts, team hire" },
+  { emoji: "\uD83C\uDFCF", label: "Cricket Nets", desc: "Net sessions, bowling machine" },
+  { emoji: "\u26BD", label: "Sports Fields", desc: "Soccer, rugby, training" },
+  { emoji: "\uD83C\uDFDB\uFE0F", label: "Function Rooms", desc: "Parties, events, weddings" },
+  { emoji: "\uD83C\uDFA4", label: "Studios", desc: "Music, photo, podcast" },
+  { emoji: "\uD83D\uDCBC", label: "Meeting Rooms", desc: "Boardrooms, co-working" },
+  { emoji: "\uD83D\uDE9B", label: "Equipment Rental", desc: "Trailers, tools, boats" },
+  { emoji: "\u2702\uFE0F", label: "Salon / Barber", desc: "Hair, nails, grooming" },
+  { emoji: "\uD83D\uDCDA", label: "Tutoring", desc: "Lessons, coaching, music" },
 ];
 
 const STEPS = [
@@ -130,6 +149,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 /* ─── Page ───────────────────────────────────────────────────── */
 export default function LandingPage() {
+  const [showAllIndustries, setShowAllIndustries] = useState(false);
   const plumbingConfig = industryConfigs["plumbing"];
 
   return (
@@ -138,11 +158,9 @@ export default function LandingPage() {
       {/* ═══ NAV ═══ */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-[#0f172a]/80 border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center -gap-1">
             <Image src="/logo.png" alt="BookButton" width={72} height={72} />
-            <span className="text-white font-bold text-lg tracking-tight" style={{ fontFamily: "var(--font-dm-sans)" }}>
-              Book<span className="text-[#22d3ee]">Button</span>
-            </span>
+            <Image src="/logo-text.png" alt="BookButton" width={680} height={176} className="h-[176px] w-auto -ml-3" />
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#how-it-works" className="text-sm text-gray-200 hover:text-[#22d3ee] font-medium transition-colors">How it works</a>
@@ -414,13 +432,13 @@ export default function LandingPage() {
           {/* Live industries */}
           <Reveal>
             <p className="text-sm font-bold uppercase tracking-[0.15em] text-[#0f172a] mb-4 flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Live now
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Service Booking
             </p>
           </Reveal>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-12">
-            {INDUSTRIES_LIVE.map((ind) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
+            {(showAllIndustries ? INDUSTRIES_LIVE : INDUSTRIES_LIVE.slice(0, 7)).map((ind) => (
               <Reveal key={ind.label}>
-                <div className="card-hover group bg-white rounded-xl border-2 border-gray-200 p-4 text-center hover:border-[#0891b2] hover:shadow-md transition-all">
+                <div className="card-hover group bg-white rounded-xl border-2 border-gray-200 p-4 text-center hover:border-[#0891b2] hover:shadow-md transition-all h-full">
                   <div className="text-3xl mb-2">{ind.emoji}</div>
                   <h3 className="font-bold text-sm text-[#0f172a]">{ind.label}</h3>
                   <p className="text-xs text-gray-600 mt-0.5">{ind.desc}</p>
@@ -428,20 +446,28 @@ export default function LandingPage() {
               </Reveal>
             ))}
           </div>
+          <div className="text-center mt-4 mb-12">
+            <button
+              onClick={() => setShowAllIndustries(!showAllIndustries)}
+              className="px-5 py-2 rounded-full border-2 border-gray-200 text-sm font-semibold text-gray-600 hover:border-[#0891b2] hover:text-[#0891b2] transition-all"
+            >
+              {showAllIndustries ? "Show less" : `Show all ${INDUSTRIES_LIVE.length} industries`}
+            </button>
+          </div>
 
-          {/* Coming soon industries */}
+          {/* Reservation booking (venues) */}
           <Reveal>
-            <p className="text-sm font-bold uppercase tracking-[0.15em] text-[#0f172a] mb-4 flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Coming soon
+            <p className="text-sm font-bold uppercase tracking-[0.15em] text-[#0f172a] mb-4 mt-4 flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" /> Reservation Booking
             </p>
           </Reveal>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-            {INDUSTRIES_COMING.map((ind) => (
-              <Reveal key={ind.label}>
-                <div className="group bg-gray-100 rounded-lg border border-gray-200 p-3 text-center hover:bg-white hover:border-gray-300 hover:shadow-sm transition-all">
-                  <div className="text-xl mb-1">{ind.emoji}</div>
-                  <h3 className="font-semibold text-xs text-[#0f172a]">{ind.label}</h3>
-                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{ind.desc}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3">
+            {VENUES_LIVE.map((v) => (
+              <Reveal key={v.label}>
+                <div className="card-hover group bg-white rounded-xl border-2 border-gray-200 p-4 text-center hover:border-purple-500 hover:shadow-md transition-all">
+                  <div className="text-3xl mb-2">{v.emoji}</div>
+                  <h3 className="font-bold text-sm text-[#0f172a]">{v.label}</h3>
+                  <p className="text-xs text-gray-600 mt-0.5">{v.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -672,11 +698,9 @@ export default function LandingPage() {
       <footer className="bg-[#0a0f1a] border-t border-white/5 py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center -gap-1">
               <Image src="/logo.png" alt="BookButton" width={72} height={72} />
-              <span className="text-white font-bold tracking-tight">
-                Book<span className="text-[#22d3ee]">Button</span>
-              </span>
+              <Image src="/logo-text.png" alt="BookButton" width={680} height={176} className="h-[176px] w-auto -ml-3" />
             </Link>
             <div className="flex items-center gap-8 text-sm text-gray-500">
               <a href="#how-it-works" className="hover:text-[#22d3ee] transition-colors">How it works</a>
