@@ -121,7 +121,7 @@ export default function PreviewPage() {
           <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">Embed Code</h3>
           <pre className="text-sm text-green-400 overflow-x-auto">
 {`<script
-  src="https://booking.yourdomain.com/widget.js"
+  src="https://bookbutton.io/widget.js"
   data-config="${selectedIndustry}"
   data-business="${businessName}"
   data-phone="${phone}"

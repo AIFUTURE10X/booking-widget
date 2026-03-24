@@ -673,7 +673,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="BookButton" width={60} height={60} />
+              <Image src="/logo.png" alt="BookButton" width={72} height={72} />
               <span className="text-white font-bold tracking-tight">
                 Book<span className="text-[#22d3ee]">Button</span>
               </span>

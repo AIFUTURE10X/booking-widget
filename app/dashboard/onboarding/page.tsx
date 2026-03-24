@@ -103,7 +103,7 @@ export default function OnboardingPage() {
   }
 
   const embedCode = `<script
-  src="https://booking.yourdomain.com/widget.js"
+  src="https://bookbutton.io/widget.js"
   data-config="${selectedIndustry}"
   data-widget-id="${savedConfigId}"
   data-business="${businessName}"

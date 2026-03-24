@@ -18,7 +18,7 @@ export default function WidgetsPage() {
   }, []);
 
   function copyEmbed(w: WidgetConfig) {
-    const code = `<script src="https://booking.yourdomain.com/widget.js" data-widget-id="${w.configId}" data-business="${w.businessName}" data-phone="${w.phone}" data-color="${w.accentColor}"></script>`;
+    const code = `<script src="https://bookbutton.io/widget.js" data-widget-id="${w.configId}" data-business="${w.businessName}" data-phone="${w.phone}" data-color="${w.accentColor}"></script>`;
     navigator.clipboard.writeText(code);
     setCopiedId(w.configId);
     setTimeout(() => setCopiedId(""), 2000);

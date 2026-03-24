@@ -18,7 +18,7 @@ export async function sendBookingEmail(booking: BookingSubmission, toEmail: stri
   const serviceLine = `${booking.category.replace(/-/g, " ")} > ${booking.serviceType} > ${booking.specificService}`;
 
   await resend.emails.send({
-    from: "Booking Widget <bookings@notifications.yourdomain.com>",
+    from: "Booking Widget <bookings@bookbutton.io>",
     to: toEmail,
     subject: `New Booking: ${booking.firstName} ${booking.lastName} — ${booking.specificService}`,
     html: `
